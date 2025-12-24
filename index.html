@@ -2,21 +2,42 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>주차 요금 계산기</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프리미엄 주차 요금 계산기</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .container { border: 2px solid #ccc; padding: 20px; display: inline-block; border-radius: 10px; }
-        input { padding: 10px; font-size: 16px; width: 150px; margin: 10px; }
-        button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { font-family: sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-box { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; width: 320px; transition: 0.1s; }
+        /* 찰깍! 시각 효과 */
+        .shutter { background-color: #333 !important; transform: scale(0.95); }
+        h1 { color: #333; font-size: 24px; }
+        input { width: 85%; padding: 15px; font-size: 20px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 20px; text-align: center; }
+        button { width: 100%; padding: 15px; font-size: 20px; background: #764ba2; color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; }
+        #price { font-size: 32px; color: #e74c3c; font-weight: bold; margin-top: 25px; min-height: 40px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚗 주차 요금 계산기</h1>
-        <p>드디어 웹페이지를 만드셨네요! 축하합니다!</p>
-        <input type="number" id="time" placeholder="분 단위 입력">
-        <br>
-        <button onclick="alert('성공입니다!')">계산하기</button>
+    <div id="app" class="app-box">
+        <h1>🚗 진짜 주차 계산기</h1>
+        <p style="color:#888;">시간을 넣고 찰깍! 버튼을 누르세요</p>
+        <input type="number" id="parkingTime" placeholder="몇 분 주차?">
+        <button onclick="run()">요금 계산 (찰깍!)</button>
+        <div id="price">0원</div>
     </div>
+    <script>
+        function run() {
+            const time = document.getElementById('parkingTime').value;
+            const app = document.getElementById('app');
+            if (!time) { alert("시간을 입력해주세요!"); return; }
+            
+            // 찰깍! 효과 실행
+            app.classList.add('shutter');
+            setTimeout(() => {
+                app.classList.remove('shutter');
+                // 계산 로직: 30분 무료, 이후 10분당 1000원
+                let fee = time > 30 ? Math.ceil((time - 30) / 10) * 1000 : 0;
+                document.getElementById('price').innerText = fee.toLocaleString() + "원";
+            }, 100);
+        }
+    </script>
 </body>
-</html>ㅇ
+</html>
