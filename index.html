@@ -3,41 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>프리미엄 주차 요금 계산기</title>
+    <title>진짜 카메라 주차 계산기</title>
     <style>
-        body { font-family: sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .app-box { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; width: 320px; transition: 0.1s; }
-        /* 찰깍! 시각 효과 */
-        .shutter { background-color: #333 !important; transform: scale(0.95); }
-        h1 { color: #333; font-size: 24px; }
-        input { width: 85%; padding: 15px; font-size: 20px; border: 2px solid #eee; border-radius: 10px; margin-bottom: 20px; text-align: center; }
-        button { width: 100%; padding: 15px; font-size: 20px; background: #764ba2; color: white; border: none; border-radius: 15px; cursor: pointer; font-weight: bold; }
-        #price { font-size: 32px; color: #e74c3c; font-weight: bold; margin-top: 25px; min-height: 40px; }
+        body { font-family: sans-serif; background: #4a3a80; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-box { background: white; padding: 25px; border-radius: 20px; text-align: center; width: 320px; }
+        
+        /* 카메라 화면 공간 */
+        #video { width: 100%; height: 240px; background: #000; border-radius: 10px; object-fit: cover; margin-bottom: 15px; }
+        
+        /* 찰깍! 화이트아웃 효과 */
+        #flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 100; border-radius: 20px; }
+        .flash-active { animation: flash-anim 0.2s; }
+        @keyframes flash-anim { from { opacity: 1; } to { opacity: 0; } }
+
+        .container { position: relative; }
+        input { width: 80%; padding: 12px; font-size: 18px; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 15px; text-align: center; }
+        button { width: 90%; padding: 15px; font-size: 18px; background: #764ba2; color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; }
+        #price { font-size: 32px; color: #e74c3c; font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div id="app" class="app-box">
-        <h1>🚗 진짜 주차 계산기</h1>
-        <p style="color:#888;">시간을 넣고 찰깍! 버튼을 누르세요</p>
+
+<div class="container">
+    <div id="flash"></div>
+    <div class="app-box">
+        <h3 style="margin-top:0;">📸 주차 카메라</h3>
+        
+        <video id="video" autoplay playsinline></video>
+
         <input type="number" id="parkingTime" placeholder="몇 분 주차?">
-        <button onclick="run()">요금 계산 (찰깍!)</button>
+        <button onclick="takeShot()">요금 계산 (찰깍!)</button>
+        
         <div id="price">0원</div>
     </div>
-    <script>
-        function run() {
-            const time = document.getElementById('parkingTime').value;
-            const app = document.getElementById('app');
-            if (!time) { alert("시간을 입력해주세요!"); return; }
-            
-            // 찰깍! 효과 실행
-            app.classList.add('shutter');
-            setTimeout(() => {
-                app.classList.remove('shutter');
-                // 계산 로직: 30분 무료, 이후 10분당 1000원
-                let fee = time > 30 ? Math.ceil((time - 30) / 10) * 1000 : 0;
-                document.getElementById('price').innerText = fee.toLocaleString() + "원";
-            }, 100);
-        }
-    </script>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const flash = document.getElementById('flash');
+
+    // 가장 단순하고 확실한 카메라 연결 방식
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => { 
+            video.srcObject = stream; 
+        })
+        .catch((err) => { 
+            alert("카메라 권한을 허용해주세요! (주소창 옆 자물쇠 클릭)"); 
+        });
+
+    function takeShot() {
+        const time = document.getElementById('parkingTime').value;
+        if (!time) return alert("시간을 입력하세요!");
+
+        // 찰깍! 효과
+        flash.classList.add('flash-active');
+        setTimeout(() => flash.classList.remove('flash-active'), 200);
+
+        // 계산 (30분 무료, 이후 10분당 1000원)
+        let fee = time > 30 ? Math.ceil((time - 30) / 10) * 1000 : 0;
+        document.getElementById('price').innerText = fee.toLocaleString() + "원";
+    }
+</script>
+
 </body>
 </html>
